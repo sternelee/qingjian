@@ -83,6 +83,30 @@ impl Engine {
         self.phonetic
     }
 
+    /// 形码满码只剩一个候选时是否自动上屏（配置 `[general] wubi_auto_commit`，缺省关）。
+    pub fn set_code_auto_commit(&mut self, on: bool) {
+        self.code_auto_commit = on;
+    }
+
+    /// 形码满码（编码长度到数据里的上限）且只剩一个候选时返回它，壳不用等空格直接上屏。
+    ///
+    /// 只对形码生效；混输下拼音候选也在同一条列里，「只剩一个」很少成立，所以自然不触发。
+    /// 作用域不够满码时直接返回，不白查一遍。
+    pub fn auto_commit_candidate(&self) -> Option<crate::Candidate> {
+        if !self.code_auto_commit {
+            return None;
+        }
+        let table = self.code.as_ref()?;
+        if self.composition.scope().len() != table.max_code_len() {
+            return None;
+        }
+        let mut items = self.query().ok()?.candidates.items;
+        match items.len() {
+            1 => items.pop(),
+            _ => None,
+        }
+    }
+
     /// 判斷注音模式下目前是否還需要輸入聲調。
     /// 供殼（平台層）用來判斷空白鍵是應該進緩衝區作為聲調，還是直接用來選詞。
     pub fn zhuyin_needs_tone(&self) -> bool {

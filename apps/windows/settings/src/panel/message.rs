@@ -11,6 +11,7 @@ pub(crate) enum Message {
     PageSize(Option<f64>),
     Scheme(Option<usize>),
     Wubi(bool),
+    WubiAutoCommit(bool),
     Traditional(bool),
     EnglishCandidates(bool),
     ChineseFirst(bool),

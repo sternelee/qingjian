@@ -24,6 +24,8 @@ impl Host {
         self.engine
             .set_shift_letter_compose(config.general.shift_letter.compose());
         self.apply_scheme(config.general.scheme(), config.general.wubi());
+        self.engine
+            .set_code_auto_commit(config.general.wubi_auto_commit);
         self.engine.set_learning(config.general.learning);
         logging::set_level(config.general.log_level);
         self.translation_keys = config.shortcut.translation_keys();
@@ -190,8 +192,7 @@ impl Host {
     /// 开了形码却找不到码表时只警告并退回只用拼音——配置说五笔、引擎一个字都打不出更糟。
     fn apply_scheme(&mut self, pinyin: Scheme, wubi: bool) {
         self.engine.set_shuangpin(pinyin.shuangpin());
-        self.engine.set_zhuyin_mode(pinyin == Scheme::Zhuyin);
-        // 拼音侧关掉且形码开着才是「只用形码」；两边都关着时留拼音兜底（否则一个候选都没有）
+        self.engine.set_zhuyin_mode(pinyin == Scheme::Zhuyin); // 拼音侧关掉且形码开着才是「只用形码」；两边都关着时留拼音兜底（否则一个候选都没有）
         self.engine.set_phonetic(pinyin.is_on() || !wubi);
         if !wubi {
             self.engine.set_code_table(None);

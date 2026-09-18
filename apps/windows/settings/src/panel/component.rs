@@ -47,6 +47,9 @@ impl Component for Settings {
                 self.save("general", "scheme", general::SCHEMES[i].1);
             }
             Message::Wubi(on) => self.save("general", "wubi", if on { "wubi86" } else { "" }),
+            Message::WubiAutoCommit(on) => {
+                self.save("general", "wubi_auto_commit", on);
+            }
             Message::Traditional(on) => self.save("general", "traditional", on),
             Message::EnglishCandidates(on) => self.save("general", "english_candidates", on),
             Message::ChineseFirst(on) => self.save("general", "chinese_first", on),

@@ -17,7 +17,16 @@ impl QingjianInputController {
             }
             return self.commit_raw(client);
         };
-        let Some(text) = host::with(|h| h.engine.commit(&candidate)) else {
+        self.commit_candidate(&candidate, client)
+    }
+
+    /// 上屏一个已经算好的候选（形码满码唯一的自动上屏也用这个）。
+    pub(super) fn commit_candidate(
+        &self,
+        candidate: &qingjian_core::Candidate,
+        client: TextClient<'_>,
+    ) -> bool {
+        let Some(text) = host::with(|h| h.engine.commit(candidate)) else {
             return false;
         };
         tracing::debug!(%text, "commit");

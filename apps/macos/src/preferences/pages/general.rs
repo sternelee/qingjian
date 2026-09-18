@@ -26,6 +26,9 @@ pub struct GeneralPage {
     /// 五笔（86 版形码）；与拼音方案同时开着就是混输。
     wubi: Retained<NSButton>,
 
+    /// 五笔满码只剩一个候选时自动上屏。
+    wubi_auto_commit: Retained<NSButton>,
+
     /// 繁体输出模式。
     traditional: Retained<NSButton>,
 
@@ -105,6 +108,18 @@ impl GeneralPage {
             mtm,
             "与拼音方案同时开着就是混输：编码打全的五笔词在前，打不出的字直接打拼音。单用五笔请把拼音方案关掉；第 5 个字母起五笔查不到东西，自动只剩拼音。",
         );
+        let wubi_auto_commit = checkbox(
+            mtm,
+            "五笔满码只剩一个候选时直接上屏",
+            Setting::WubiAutoCommit,
+            target,
+        );
+        row_checkbox(layout, &wubi_auto_commit);
+        note(
+            layout,
+            mtm,
+            "只对五笔生效：编码打到最长（五笔是 4 位）且只剩一个候选时不用再按 Space；有重码时仍照常选。",
+        );
         let punctuation = row_popup(
             layout,
             mtm,
@@ -173,6 +188,7 @@ impl GeneralPage {
             page_size,
             scheme,
             wubi,
+            wubi_auto_commit,
             traditional,
             english,
             english_off_in_apps,
@@ -210,6 +226,7 @@ impl GeneralPage {
             ),
         );
         set_checked(&self.wubi, general.wubi());
+        set_checked(&self.wubi_auto_commit, general.wubi_auto_commit);
         set_checked(&self.traditional, general.traditional);
         set_checked(&self.english, general.english_candidates);
         set_checked(

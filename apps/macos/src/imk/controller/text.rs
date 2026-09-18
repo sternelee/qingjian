@@ -143,6 +143,11 @@ impl QingjianInputController {
             || punctuation
         {
             host::with(|h| h.engine.push(c));
+            // 形码满码只剩一个候选时直接上屏，不等空格（配置 `[general] wubi_auto_commit`，缺省关）；
+            // 非形码 / 未满码 / 有重码时返回 None，照常画候选
+            if let Some(candidate) = host::with(|h| h.engine.auto_commit_candidate()).flatten() {
+                return self.commit_candidate(&candidate, client);
+            }
             self.refresh(client);
             return true;
         }

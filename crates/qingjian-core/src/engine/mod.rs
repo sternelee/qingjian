@@ -247,6 +247,9 @@ pub struct Engine {
     /// **两边都开 = 混输**（编码打全的形码候选在前，见 [`Engine::query_mixed`]）。两个都关着时按拼音走。
     phonetic: bool,
 
+    /// 形码满码（编码到上限）且只剩一个候选时自动上屏（配置 `[general] wubi_auto_commit`，缺省关）。
+    code_auto_commit: bool,
+
     /// emoji 表，没有就不出 emoji 候选。
     emoji: Option<EmojiTable>,
 
@@ -391,6 +394,7 @@ impl Engine {
             zhuyin: false,
             code: None,
             phonetic: true,
+            code_auto_commit: false,
             emoji: None,
             traditional: false,
             opencc: None,

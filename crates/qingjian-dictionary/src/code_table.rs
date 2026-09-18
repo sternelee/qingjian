@@ -122,6 +122,11 @@ impl CodeTable {
         self.wildcard
     }
 
+    /// 数据里最长的编码位数（五笔 86 / 98 都是 4）。自动上屏拿它当「满码」。
+    pub fn max_code_len(&self) -> usize {
+        self.max_code_len
+    }
+
     pub fn from_path(path: impl AsRef<Path>) -> Result<Self, DictionaryError> {
         Self::parse(&std::fs::read_to_string(path)?)
     }

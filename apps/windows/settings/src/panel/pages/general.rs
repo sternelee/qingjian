@@ -97,6 +97,13 @@ pub(crate) fn view(settings: &Settings, context: &mut ViewContext<Settings>) -> 
                 .on_toggled(context.callback(Message::Wubi)),
         ),
         field(
+            "五笔满码只剩一个候选时直接上屏",
+            "只对五笔生效：编码打到最长（五笔是 4 位）且只剩一个候选时不用再按 Space；有重码时仍照常选。",
+            ToggleSwitch::new()
+                .is_on(g.wubi_auto_commit)
+                .on_toggled(context.callback(Message::WubiAutoCommit)),
+        ),
+        field(
             "繁体输出",
             "打字时将候选词转换为繁体中文。",
             ToggleSwitch::new()

@@ -260,6 +260,7 @@ fn build_engine(args: &Args) -> Result<Engine, CliError> {
         engine.set_code_table(Some(CodeTable::from_path(path)?));
         tracing::info!(table = %path.display(), "形码码表已载入");
     }
+    engine.set_code_auto_commit(config.general.wubi_auto_commit);
     if config.predict.enabled {
         let predictor = CloudPredictor::new(&config.predict)?;
         engine = engine.with_predictor(Box::new(predictor));

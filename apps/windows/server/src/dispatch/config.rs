@@ -79,6 +79,9 @@ pub struct RouterConfig {
 
     /// 形码侧开没开（`[general] wubi`）。与拼音同时开着就是混输。
     pub wubi: bool,
+
+    /// 形码满码只剩一个候选时自动上屏（`[general] wubi_auto_commit`）。
+    pub wubi_auto_commit: bool,
 }
 
 impl RouterConfig {
@@ -125,6 +128,7 @@ impl From<&Config> for RouterConfig {
             status_pos: config.status_bar.x.zip(config.status_bar.y),
             scheme: config.general.scheme(),
             wubi: config.general.wubi(),
+            wubi_auto_commit: config.general.wubi_auto_commit,
         }
     }
 }

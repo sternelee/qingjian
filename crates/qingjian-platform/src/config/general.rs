@@ -77,6 +77,9 @@ pub struct GeneralConfig {
     /// 形码侧方案：空串为关，`wubi86` 为五笔（86 版）。**与拼音同时开着就是混输**，见 [`Self::mixed`]。
     pub wubi: String,
 
+    /// 形码满码（五笔 4 码）只剩一个候选时直接上屏，不用再按空格。只对形码生效，缺省关。
+    pub wubi_auto_commit: bool,
+
     /// 旧键（2026-09-16 之前是 `[general] shuangpin`，空串为全拼）：只在 [`Self::scheme`] 里用来推断方案，
     /// 不再写出去；`scheme` 写了值就不看它。当时 `shuangpin` 与 `zhuyin` 是两个字段表达同一个维度。
     pub shuangpin: Option<String>,
@@ -118,6 +121,7 @@ impl Default for GeneralConfig {
             english_full_width_punctuation: false,
             scheme: String::new(),
             wubi: String::new(),
+            wubi_auto_commit: false,
             shuangpin: None,
             zhuyin: None,
             log_level: LogLevel::default(),

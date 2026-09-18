@@ -217,6 +217,43 @@ fn mixed_input_keeps_the_leading_wildcard_for_pinyin() {
 }
 
 #[test]
+fn auto_commit_fires_on_a_full_code_with_a_single_candidate() {
+    let mut engine = wubi();
+    // 开关关着：不动
+    engine.set_input("ggll");
+    assert!(engine.auto_commit_candidate().is_none());
+
+    engine.set_code_auto_commit(true);
+    engine.set_input("ggll");
+    assert_eq!(
+        engine.auto_commit_candidate().map(|c| c.text),
+        Some("一".to_owned())
+    );
+    // 没到满码（数据里最长 4）：不自动上屏，也不白查一遍
+    engine.set_input("ggl");
+    assert!(engine.auto_commit_candidate().is_none());
+}
+
+#[test]
+fn auto_commit_needs_a_single_candidate_and_a_code_table() {
+    // 满码有重码：不触发
+    let mut coded = engine();
+    coded.set_code_table(Some(
+        CodeTable::parse("甲\tabcd\t900\n乙\tabcd\t100\n").unwrap(),
+    ));
+    coded.set_phonetic(false);
+    coded.set_code_auto_commit(true);
+    coded.set_input("abcd");
+    assert!(coded.auto_commit_candidate().is_none());
+
+    // 没有码表（拼音方案）：即使开着也不触发
+    let mut pinyin = engine();
+    pinyin.set_code_auto_commit(true);
+    pinyin.set_input("kaifa");
+    assert!(pinyin.auto_commit_candidate().is_none());
+}
+
+#[test]
 fn keys_outside_the_code_alphabet_fall_back_to_raw() {
     let mut engine = wubi();
     engine.set_input("no-way");

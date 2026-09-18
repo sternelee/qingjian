@@ -378,6 +378,9 @@ impl Host {
                 self.settings
                     .set_value("general", "wubi", if on { "wubi86" } else { "" });
             }
+            (Setting::WubiAutoCommit, SettingValue::Bool(on)) => {
+                self.settings.set_bool("general", "wubi_auto_commit", on);
+            }
             // 文本框失焦也会发 action：值没变就不写，免得每次切窗口都重写一遍配置
             (Setting::BaseUrl, SettingValue::Text(text)) => {
                 let text = text.trim();

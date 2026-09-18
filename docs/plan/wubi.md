@@ -188,6 +188,24 @@ wubi   = "wubi86"    # 形码侧：空为关
 `lookup_plain` 不认（混输让位给拼音时用）；`query_code_counted` 接一个 `leading_wildcard` 开关，
 `query_code`（纯形码）传真、`query_mixed` 传假。测试见 `code_table` 的 4 条与 `engine/tests/code.rs` 的 2 条。
 
+## 五之四、满码唯一自动上屏（2026-09-18 追加，原计划之外）
+
+编码打到数据里的最长（五笔是 4 位）且候选只剩一个时，不用再按 `Space`，直接上屏。
+配置 `[general] wubi_auto_commit`，**缺省关**——自动上屏会让退格语义变复杂（退格撤销 `recent_commits`
+的那套要能对上），先让用户自己选。
+
+落点：`CodeTable::max_code_len()`（加载时从数据里量出来的，不是写死 4）、`Engine::set_code_auto_commit`
+与 `Engine::auto_commit_candidate`（作用域不够满码时直接返回，不白查一遍；没码表或混输下「只剩一个」
+很少成立，自然不触发）；macOS 在按键路径上试一次（`commit_candidate` 与数字键选词共用同一条上屏路），
+Windows 在 `dispatch/code.rs::apply_scheme` 里装配（启动与热加载同一个咽喉点），两平台设置页各有勾选框。
+
+不做「一级简码直接上屏」：那会挡住以该字母开头的多码输入，主流也不这么做。
+
+顺带修了数据：上游极点表里有两行错编码（`TF卡\tttfhh` 等 5–6 位），把 `max_code_len` 从 4 顶到 6，
+自动上屏就永远不会触发。`dict-convert wubi` 现在丢掉码长超过 `MAX_CODE_LEN = 4` 的行，
+并按当前词库重跑了一遍 `assets/wubi/wubi86.tsv`（只动了 3 行：删掉那两条错行，`B站` / `T恤` 拿到了语料词频）。
+
+
 ## 六、不做的事
 
 - **运行时取码推导**（由单字码拼出词组码）：规则太绕，静态表够用。

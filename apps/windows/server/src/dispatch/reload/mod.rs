@@ -159,7 +159,11 @@ impl Router {
     fn apply_config(&mut self, config: &Config) {
         self.engine.set_fuzzy(config.fuzzy);
         // 拼音侧与形码侧一起装配（双拼 / 注音 / 混输都在里面）
-        self.reload_code_table(config.general.scheme(), config.general.wubi());
+        self.reload_code_table(
+            config.general.scheme(),
+            config.general.wubi(),
+            config.general.wubi_auto_commit,
+        );
         self.engine.set_traditional_mode(config.general.traditional);
         self.engine.set_learning(config.general.learning);
         self.engine.set_mode_keys(config.shortcut.mode);

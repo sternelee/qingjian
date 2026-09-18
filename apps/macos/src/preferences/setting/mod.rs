@@ -137,6 +137,9 @@ pub enum Setting {
     /// `[general] wubi`，勾选框：勾上是五笔（86 版）。与拼音同时开着就是混输。
     Wubi,
 
+    /// `[general] wubi_auto_commit`，勾选框：形码满码只剩一个候选时直接上屏。
+    WubiAutoCommit,
+
     /// [general] traditional，勾选框：繁体输出。
     Traditional,
 
@@ -230,6 +233,7 @@ impl Setting {
             Self::EditPhrase => 39,
             Self::CancelPhraseEdit => 40,
             Self::Wubi => 49,
+            Self::WubiAutoCommit => 51,
             Self::Renderer => 43,
             Self::Font => 44,
             Self::SystemTextReplacements => 46,
@@ -267,6 +271,7 @@ impl Setting {
             19 => Self::ImportDictionary,
             20 => Self::Scheme,
             49 => Self::Wubi,
+            51 => Self::WubiAutoCommit,
             47 => Self::Traditional,
             21 => Self::VerboseLog,
             22 => Self::OpenLogDirectory,
@@ -338,6 +343,7 @@ mod tests {
             Setting::ImportDictionary,
             Setting::Scheme,
             Setting::Wubi,
+            Setting::WubiAutoCommit,
             Setting::Traditional,
             Setting::VerboseLog,
             Setting::OpenLogDirectory,
