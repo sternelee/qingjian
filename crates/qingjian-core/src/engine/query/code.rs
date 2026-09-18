@@ -11,11 +11,19 @@ impl Engine {
     /// 整句转换、中英混输与神经重排也没有可以展开的东西。反过来，译词标注、生词记录、输入日志、
     /// 用户选择学习与个人 n-gram 都按上屏的词工作，与拼音方案共用同一条路。
     pub(super) fn query_code(&self, keys: &str, rest: String, start: Instant) -> Query {
-        self.query_code_counted(keys, rest, start).0
+        self.query_code_counted(keys, rest, start, true).0
     }
 
     /// 同 [`Self::query_code`]，另带回排在最前面的「编码打全」的候选有几条（混输按它分两段）。
-    fn query_code_counted(&self, keys: &str, rest: String, start: Instant) -> (Query, usize) {
+    /// `leading_wildcard` 为假时，首位的万能键不当万能键——混输下 `zi` / `zai` 是拼音，
+    /// 不该按「任意字母 + i」去查码；非首位的 `z`（`trnz`、`wqzz`）拼音里不存在，任何情况都算万能键。
+    fn query_code_counted(
+        &self,
+        keys: &str,
+        rest: String,
+        start: Instant,
+        leading_wildcard: bool,
+    ) -> (Query, usize) {
         let table = self.code.as_ref().expect("只在形码方案下调用");
         // 编码以外的字符（`no-way` 的 `-`）不是编码，交给原样上屏那条路
         if !keys.chars().all(|c| c.is_ascii_lowercase()) {
@@ -25,8 +33,15 @@ impl Engine {
 
         let start = Instant::now();
         let log_total = (table.total_frequency() as f64).max(1.0).ln();
-        let mut scored: Vec<Scored<'_>> = table
-            .lookup(keys, MAX_CANDIDATES)
+        let hits = match table.wildcard() {
+            Some(wildcard)
+                if keys.contains(wildcard) && (leading_wildcard || !keys.starts_with(wildcard)) =>
+            {
+                table.lookup(keys, MAX_CANDIDATES)
+            }
+            _ => table.lookup_plain(keys, MAX_CANDIDATES),
+        };
+        let mut scored: Vec<Scored<'_>> = hits
             .into_iter()
             .map(|hit| Scored {
                 hit,
@@ -101,7 +116,7 @@ impl Engine {
         rest: String,
         start: Instant,
     ) -> Result<Query, ParseError> {
-        let (code, exact) = self.query_code_counted(keys, rest.clone(), start);
+        let (code, exact) = self.query_code_counted(keys, rest.clone(), start, false);
         let mut query = match self.query_phonetic(keys, rest, start) {
             Ok(query) => query,
             Err(error) => {

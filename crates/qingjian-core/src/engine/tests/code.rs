@@ -194,6 +194,29 @@ fn mixed_input_falls_back_to_the_code_side_when_pinyin_cannot_read_it() {
 }
 
 #[test]
+fn the_wildcard_fills_an_unknown_position() {
+    let mut engine = wubi();
+    // 首位之外：`gz` 等长 2 码、第二位任意 → `gc`（到）/`go`（来）/`ga`（开），按词频降序
+    assert_eq!(code_texts(&mut engine, "gz"), ["到", "来", "开"]);
+    // 首位就是万能键：纯形码下 `z` 是全部一级简码
+    assert_eq!(code_texts(&mut engine, "z"), ["发"]);
+    // 四位全万能键 = 任意 4 码的编码
+    assert!(code_texts(&mut engine, "zzzz").contains(&"开发".to_owned()));
+    // 长过最长的编码：什么都不出（不白扫整张表）
+    assert!(code_texts(&mut engine, "zhongguo").is_empty());
+}
+
+#[test]
+fn mixed_input_keeps_the_leading_wildcard_for_pinyin() {
+    let mut engine = mixed();
+    // 混输下首位的 `z` 是拼音声母，不当万能键（`zi` 应当是拼音的字，不是「任意字母 + i」的码）
+    let texts = code_texts(&mut engine, "zi");
+    assert!(texts.iter().all(|t| t != "甲" && t != "乙丙"));
+    // 非首位的 `z` 拼音里不存在，照旧算万能键：`kaz` 命中编码 `kai`（甲，等长）
+    assert!(code_texts(&mut engine, "kaz").contains(&"甲".to_owned()));
+}
+
+#[test]
 fn keys_outside_the_code_alphabet_fall_back_to_raw() {
     let mut engine = wubi();
     engine.set_input("no-way");
