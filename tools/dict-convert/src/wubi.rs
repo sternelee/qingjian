@@ -19,6 +19,9 @@ use crate::error::ConvertError;
 /// 词库里查不到的词给的词频。
 pub const UNKNOWN_FREQUENCY: u32 = 1;
 
+/// 五笔编码最长几位：一到四级，多字词也是 4 键。上游表里的超长行是错数据，丢掉。
+pub const MAX_CODE_LEN: usize = 4;
+
 /// 转换结果，打日志用。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Converted {
@@ -30,6 +33,9 @@ pub struct Converted {
 
     /// 词库里查不到、拿了 [`UNKNOWN_FREQUENCY`] 的条数。占比高说明码表与词库的词面写法对不上，要查。
     pub unknown: usize,
+
+    /// 编码长过 [`MAX_CODE_LEN`] 而丢掉的条数（上游表的错行）。
+    pub skipped_long: usize,
 }
 
 /// 读 Rime 码表写出青简形码 TSV，词频从 `frequencies`（青简词库 TSV，可给多本）交叉回填。
@@ -61,6 +67,7 @@ pub fn convert(
 
     let tsv = to_tsv(&source).tsv;
     let mut entries: Vec<(String, String, u32)> = Vec::new();
+    let mut skipped_long = 0usize;
     for (index, raw) in tsv.lines().enumerate() {
         // 只去尾部空白：词字段可能是空的（源表里 全角空格 那条以制表符开头），
         // 整行 trim 会把开头的制表符吃掉、后面的列整体左移，编码被当成词
@@ -78,6 +85,12 @@ pub fn convert(
         };
         let (word, code) = (word.trim(), code.trim().to_ascii_lowercase());
         if word.is_empty() || code.is_empty() {
+            continue;
+        }
+        // 五笔编码最长 4 位（一级到四级），多字词也是 4 键。上游表里有两条错行（`TF卡	ttfhh`），
+        // 带进去会把 "满码" 顶到 5–6 位，自动上屏这类按满码判断的行为就不触发了
+        if code.len() > MAX_CODE_LEN {
+            skipped_long += 1;
             continue;
         }
         let weight = table.get(word).copied().unwrap_or(UNKNOWN_FREQUENCY);
@@ -108,6 +121,7 @@ pub fn convert(
     Ok(Converted {
         entries: entries.len(),
         with_frequency: entries.len() - unknown,
+        skipped_long,
         unknown,
     })
 }
@@ -172,9 +186,20 @@ name: wubi86
             Converted {
                 entries: 5,
                 with_frequency: 4,
+                skipped_long: 0,
                 unknown: 1,
             }
         );
+    }
+
+    #[test]
+    fn drops_codes_longer_than_four_keys() {
+        // 上游表里的错行（`TF卡\tttfhh`）会让「满码」判成 5–6 位，按满码判断的行为就不触发了
+        let table = "---\nname: wubi86\n...\nTF卡\tttfhh\t1\n开\tga\t80\n";
+        let (lines, converted) = convert_to_strings("long-code", table, DICT);
+        assert_eq!(lines, ["开\tga\t800"]);
+        assert_eq!(converted.skipped_long, 1);
+        assert_eq!(converted.entries, 1);
     }
 
     #[test]

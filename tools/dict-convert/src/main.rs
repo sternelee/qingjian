@@ -76,6 +76,7 @@ fn run() -> Result<(), ConvertError> {
                 entries = converted.entries,
                 from_corpus = converted.with_frequency,
                 unknown = converted.unknown,
+                skipped_long = converted.skipped_long,
                 "形码码表已写出"
             );
             Ok(())
