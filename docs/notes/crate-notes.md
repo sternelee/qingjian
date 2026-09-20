@@ -24,7 +24,7 @@ TSV 解析、查询与生成工具把 `lue` / `nue` 统一成 `lve` / `nve`。
 `candidate` / `ranking` / `shortcut` / `sentence` / `fuzzy` / `shuangpin`（双拼：四套方案键位表、键 → 全拼解码与消耗换算）/ `zhuyin`（大千注音：键 → 注音符号 → 拼音，`[general] zhuyin` 开关，声调只判音节完整不进查询）/ `emoji` /
 `english`（英文模式候选）/ `engine`（`query::EnglishTail`：句末英文词并入整句，`woxiangxuehaorust` → 我想学好rust，尾段也像拼音时按分数与拼音读法比）。
 形码（五笔）在 `engine::query::code`。`Engine` 上有三个开关：`set_code_table`（码表）、`set_phonetic`（拼音侧参不参与）、
-`set_code_auto_commit`（满码唯一自动上屏；判据是 `CodeTable::max_code_len()`，不是写死 4），
+`set_code_auto_commit`（满码唯一自动上屏；判据是 `CodeTable::max_code_len()`，不是写死 4），形码候选的 `Candidate::code` 带上完整编码（候选旁的码提示；与 `syllables` 分开），
 在 `query_inner` 进切分之前按这两个分派——只有拼音 / 只有形码（`query_code`）/ **两边都开（`query_mixed`，混输）**。
 编码按前缀查表，`CandidateKind::Code` 的候选 `syllables` 为空、上屏吃掉整段作用域（`whole_scope`）。
 混输是「拼音那条 Query 前面插上形码候选」：拼音读不出来时（`ggll`）整个按形码走，两边都空才算错；

@@ -31,6 +31,7 @@ impl Engine {
                     kind: CandidateKind::Custom(phrase.position),
                     syllables: Vec::new(),
                     reading: None,
+                    code: None,
                     translation: None,
                 },
             );
@@ -73,6 +74,7 @@ impl Engine {
             kind: CandidateKind::English,
             syllables: Vec::new(),
             reading: None,
+            code: None,
             translation: None,
         };
         let word = lists.iter().find_map(|words| words.get(text));
@@ -181,6 +183,7 @@ impl Engine {
                         kind: CandidateKind::Emoji,
                         syllables: syllables.clone(),
                         reading: Some(word.clone()),
+                        code: None,
                         translation: None,
                     },
                 );

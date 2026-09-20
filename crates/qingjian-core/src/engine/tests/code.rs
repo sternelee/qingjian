@@ -217,6 +217,34 @@ fn mixed_input_keeps_the_leading_wildcard_for_pinyin() {
 }
 
 #[test]
+fn code_candidates_carry_their_code_for_the_hint() {
+    // 打全的候选带自己的编码，只命中前缀的带它的全码（打半码时看得到还要敲什么）
+    let mut wubi = wubi();
+    wubi.set_input("ga");
+    let query = wubi.query().unwrap();
+    let hits: Vec<(&str, Option<&str>)> = query
+        .candidates
+        .items
+        .iter()
+        .map(|c| (c.text.as_str(), c.code.as_deref()))
+        .collect();
+    assert_eq!(hits, [("开", Some("ga")), ("开发", Some("gant"))]);
+
+    // 拼音候选没有码
+    let mut pinyin = engine();
+    pinyin.set_input("kaifa");
+    assert!(
+        pinyin
+            .query()
+            .unwrap()
+            .candidates
+            .items
+            .iter()
+            .all(|c| c.code.is_none())
+    );
+}
+
+#[test]
 fn auto_commit_fires_on_a_full_code_with_a_single_candidate() {
     let mut engine = wubi();
     // 开关关着：不动

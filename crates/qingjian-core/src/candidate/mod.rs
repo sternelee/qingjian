@@ -38,6 +38,13 @@ pub struct Candidate {
     /// 读音（如日语假名），中文候选暂不使用。
     pub reading: Option<String>,
 
+    /// 形码候选（五笔）的完整编码，候选旁当码提示用；其他来源为 `None`。
+    ///
+    /// 与 `syllables` 分开：那个是拼音音节、给 preedit 高亮用的，形码下为空（编码不是音节，
+    /// 按音节高亮对形码没有意义）。
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub code: Option<String>,
+
     /// 学习语言下的译文；查不到或尚未就绪时为 `None`。
     pub translation: Option<Translation>,
 }

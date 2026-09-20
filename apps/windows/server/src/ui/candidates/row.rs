@@ -7,7 +7,14 @@ use qingjian_render::{Row, Tone};
 /// `position` 是页内下标（从 0 起）。
 pub(crate) fn from_candidate(position: usize, candidate: &Candidate) -> Row {
     let mut annotation = Vec::new();
+    // 形码候选（五笔）的编码：与输入等长时就是「打全了」，可以先看它再决定要不要选
+    if let Some(code) = &candidate.code {
+        annotation.push((code.clone(), Tone::Faint));
+    }
     if let Some(reading) = &candidate.reading {
+        if !annotation.is_empty() {
+            annotation.push((" · ".to_owned(), Tone::Faint));
+        }
         annotation.push((reading.clone(), Tone::Gloss));
     }
     if let Some(translation) = &candidate.translation {

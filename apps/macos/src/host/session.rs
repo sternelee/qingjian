@@ -128,6 +128,7 @@ mod tests {
                 kind: CandidateKind::Chinese,
                 syllables: vec!["a".into()],
                 reading: None,
+                code: None,
                 translation: None,
             })
             .collect()

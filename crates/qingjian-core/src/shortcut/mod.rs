@@ -77,6 +77,7 @@ pub fn candidates(input: &str, expression: char, now: &Zoned) -> Vec<Candidate> 
             kind: CandidateKind::Shortcut,
             syllables: Vec::new(),
             reading: None,
+            code: None,
             translation: None,
         })
         .collect()

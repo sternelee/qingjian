@@ -270,6 +270,7 @@ impl Engine {
                 kind: CandidateKind::Chinese,
                 syllables: s.hit.syllables().map(str::to_owned).collect(),
                 reading: None,
+                code: None,
                 translation: None,
             })
             .collect();
@@ -336,6 +337,7 @@ impl Engine {
                 kind: CandidateKind::English,
                 syllables: Vec::new(),
                 reading: None,
+                code: None,
                 translation: None,
             });
         }
@@ -364,6 +366,7 @@ impl Engine {
             kind: CandidateKind::English,
             syllables: Vec::new(),
             reading: None,
+            code: None,
             translation: None,
         }];
         Query {
@@ -399,6 +402,7 @@ impl Engine {
             kind: CandidateKind::English,
             syllables: Vec::new(),
             reading: None,
+            code: None,
             translation: None,
         })
         .collect();
@@ -435,6 +439,7 @@ impl Engine {
                         kind: CandidateKind::Shortcut,
                         syllables: Vec::new(),
                         reading: None,
+                        code: None,
                         translation: None,
                     }],
                 },
@@ -553,6 +558,7 @@ impl Engine {
             kind,
             syllables: conversion.syllables,
             reading: None,
+            code: None,
             translation: None,
         })
     }

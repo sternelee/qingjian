@@ -82,6 +82,8 @@ impl Engine {
                 // 编码不是拼音音节：候选窗按音节高亮的部分对形码没有意义，留空
                 syllables: Vec::new(),
                 reading: None,
+                // 命中它的完整编码，候选旁当码提示
+                code: Some(s.hit.pinyin.to_owned()),
                 translation: None,
             })
             .collect();

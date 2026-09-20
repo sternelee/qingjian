@@ -257,6 +257,7 @@ fn cloud_words_tolerate_typos_but_not_unrelated_words() {
         kind: CandidateKind::Cloud,
         syllables: prediction.words[0].syllables.clone(),
         reading: None,
+        code: None,
         translation: None,
     };
     assert_eq!(engine.commit(&word), "这个东西吗");
@@ -394,6 +395,7 @@ fn committing_a_cloud_word_learns_it_and_it_ranks_first_next_time() {
         kind: CandidateKind::Cloud,
         syllables: vec!["zhang".into(), "tao".into()],
         reading: None,
+        code: None,
         translation: None,
     };
     assert_eq!(engine.commit(&word), "账套");
@@ -441,6 +443,7 @@ fn traditional_mode_preserves_original_text_across_queries() {
         kind: CandidateKind::Cloud,
         syllables: vec!["kai".into(), "fa".into()],
         reading: None,
+        code: None,
         translation: None,
     };
     assert_eq!(engine.commit(&word), "凱發");
@@ -457,6 +460,7 @@ fn cloud_words_are_learned_with_the_typed_reading_when_it_fits() {
         kind: CandidateKind::Cloud,
         syllables: syllables.iter().map(|s| (*s).to_owned()).collect(),
         reading: None,
+        code: None,
         translation: None,
     };
     let has = |engine: &Engine, text: &str| texts_of(engine).iter().any(|t| t == text);

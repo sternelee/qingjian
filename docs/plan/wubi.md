@@ -206,6 +206,17 @@ Windows 在 `dispatch/code.rs::apply_scheme` 里装配（启动与热加载同�
 并按当前词库重跑了一遍 `assets/wubi/wubi86.tsv`（只动了 3 行：删掉那两条错行，`B站` / `T恤` 拿到了语料词频）。
 
 
+## 五之五、候选旁的码提示（2026-09-18 追加，原计划之外）
+
+形码候选右侧淡色显示**它的完整编码**：打半码时看得到还要敲什么（`k` → 开发 后面跟 `gant`），
+重码时也一眼看出是哪个编码。
+
+`Candidate` 上加了一个 `code: Option<String>`（只有 `CandidateKind::Code` 填，其他来源为 `None`），
+与 `syllables` 分开：那个是拼音音节、给 preedit 高亮用的，形码下为空是刻意的（编码不是音节）。
+`#[serde(default, skip_serializing_if = "Option::is_none")]`，线协议向后兼容。
+
+两个平台的候选行（macOS `candidates/row.rs`、Windows `ui/candidates/row.rs`）都把它当第一段 annotation 画在最前。
+
 ## 六、不做的事
 
 - **运行时取码推导**（由单字码拼出词组码）：规则太绕，静态表够用。

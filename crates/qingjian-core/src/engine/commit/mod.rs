@@ -297,6 +297,7 @@ impl Engine {
             kind: CandidateKind::Chinese,
             syllables,
             reading: None,
+            code: None,
             translation: None,
         };
         if !self.knows_word(&candidate)
@@ -623,6 +624,7 @@ impl Engine {
             kind: CandidateKind::Chinese,
             syllables: joined_syllables,
             reading: None,
+            code: None,
             translation: None,
         };
         if self.knows_word(&candidate) {

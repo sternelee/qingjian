@@ -525,6 +525,7 @@ fn committing_the_translation_learns_the_word_and_returns_the_gloss() {
         kind: CandidateKind::Chinese,
         syllables: vec!["zhe".into()],
         reading: None,
+        code: None,
         translation: None,
     };
     assert_eq!(engine.commit_translation(&zhe, 0), None);
